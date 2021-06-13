@@ -1,5 +1,4 @@
 from urllib.parse import urlparse
-import configobj
 from configs import config as main_config
 
 
@@ -18,13 +17,22 @@ class NoteMe:
         list_urls.append(link) if link not in list_urls else None
         self.config.write()
 
-    def search(self, value):
+    def bulk_save(self, links):
+        for link in links:
+            self.save(link)
+
+    def search(self, search_value, limit=None, hostname=None):
+        search_hostnames = [
+            h for h in self.config['URL_SAVED'] if h == hostname
+        ] if hostname else self.config['URL_SAVED']
+
         list_links = []
-        for hostname in self.config['URL_SAVED']:
+        for hostname in search_hostnames:
             for link in self.config['URL_SAVED'][hostname]:
-                if value in link:
+                if search_value in link:
                     list_links.append(link)
-        return list_links
+
+        return list_links[:limit] if isinstance(limit, int) else list_links
 
     def list_hostname(self):
         return self.config['URL_SAVED'].keys()
@@ -35,7 +43,7 @@ class NoteMe:
             link = self.config['URL_SAVED'][hostname]
         return link
 
-    def is_empty_list_for(self, hostname):
+    def is_list_empty_for(self, hostname):
         if hostname not in self.config['URL_SAVED'].keys():
             self.config['URL_SAVED'][hostname] = []
         return len(self.config['URL_SAVED'][hostname]) < 1
@@ -48,4 +56,8 @@ class NoteMe:
             self.config['URL_SAVED'][hostname] = []
 
         self.config['URL_SAVED'][hostname].remove(link)
+        self.config.write()
+
+    def remove_hostname(self, hostname):
+        del self.config['URL_SAVED'][hostname]
         self.config.write()
