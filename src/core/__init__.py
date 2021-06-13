@@ -1,5 +1,22 @@
+from typing import Union, List
 from urllib.parse import urlparse
-from configs import config as main_config
+from src.configs import config as main_config
+
+
+URL_SAVED_NAME = 'URL_SAVED'
+
+
+def get_hostname_from_url(url):
+    return urlparse(url).hostname
+
+
+def ensure_config_hostname(config, hostname):
+    """
+    Ensure doesnt make any error
+    when hostname configure want to be filled
+    """
+    if hostname and hostname not in config[URL_SAVED_NAME].keys():
+        config[URL_SAVED_NAME][hostname] = []
 
 
 class NoteMe:
@@ -7,17 +24,14 @@ class NoteMe:
         self.config = config or main_config
 
     def save(self, link):
-        link_parsed = urlparse(link)
-        hostname = link_parsed.hostname
+        hostname = get_hostname_from_url(link)
+        ensure_config_hostname(self.config, hostname=hostname)
 
-        if hostname not in self.config['URL_SAVED'].keys():
-            self.config['URL_SAVED'][hostname] = []
-
-        list_urls = self.config['URL_SAVED'][hostname]
+        list_urls = self.config[URL_SAVED_NAME][hostname]
         list_urls.append(link) if link not in list_urls else None
         self.config.write()
 
-    def bulk_save(self, links):
+    def bulk_save(self, links: Union[str, List[str]]):
         for link in links:
             self.save(link)
 
@@ -43,18 +57,13 @@ class NoteMe:
             link = self.config['URL_SAVED'][hostname]
         return link
 
-    def is_list_empty_for(self, hostname):
-        if hostname not in self.config['URL_SAVED'].keys():
-            self.config['URL_SAVED'][hostname] = []
-        return len(self.config['URL_SAVED'][hostname]) < 1
+    def is_empty_list_for(self, hostname):
+        ensure_config_hostname(config=self.config, hostname=hostname)
+        return len(self.config['URL_SAVED'][hostname]) < 1 if hostname else True
 
-    def remove_from_list(self, link):
-        link_parsed = urlparse(link)
-        hostname = link_parsed.hostname
-
-        if hostname not in self.config['URL_SAVED'].keys():
-            self.config['URL_SAVED'][hostname] = []
-
+    def remove_link(self, link):
+        hostname = get_hostname_from_url(link)
+        ensure_config_hostname(config=self.config, hostname=hostname)
         self.config['URL_SAVED'][hostname].remove(link)
         self.config.write()
 

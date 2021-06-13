@@ -1,6 +1,6 @@
 import click
 
-from core import NoteMe
+from src.core import NoteMe
 
 
 OPEN_BROWSER = 'open_browser'
@@ -11,7 +11,7 @@ def helper_for_action(note_me: NoteMe, link_chosen: str, action: str) -> None:
     if action.lower() == OPEN_BROWSER:
         click.launch(link_chosen)
     elif action.lower() == REMOVE:
-        note_me.remove_from_list(link_chosen)
+        note_me.remove_link(link_chosen)
 
 
 def helper_for_hostname_action(note_me: NoteMe, link_chosen: str, action: str) -> None:

@@ -1,6 +1,6 @@
 import inquirer
 
-from core import NoteMe
+from src.core import NoteMe
 
 
 def ask_to_choose_hostname(note_me, reverse=None):
@@ -43,11 +43,14 @@ def ask_to_choose_action(note_me: NoteMe, hostname, reverse=None):
     return answers['link_chosen'], answers['action']
 
 
-def ask_to_choose_list_hostname(note_me: NoteMe, reverse=None):
+def ask_to_choose_hostname_with_action(note_me: NoteMe, reverse=None):
     list_hostname = note_me.list_hostname()
 
     if reverse:
         list_hostname.sort(reverse=reverse)
+
+    if len(list_hostname) == 0:
+        return None, None
 
     questions = [
         inquirer.List(
