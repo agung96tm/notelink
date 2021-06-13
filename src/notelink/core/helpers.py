@@ -1,6 +1,6 @@
 import click
 
-from src.core import NoteMe
+from notelink.core import NoteMe
 
 
 OPEN_BROWSER = 'open_browser'

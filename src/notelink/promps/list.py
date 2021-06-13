@@ -1,6 +1,6 @@
 import inquirer
 
-from src.core import NoteMe
+from notelink.core import NoteMe
 
 
 def ask_to_choose_hostname(note_me, reverse=None):

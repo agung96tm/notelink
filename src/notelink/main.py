@@ -2,20 +2,21 @@ from typing import Union, List
 
 import click
 
-from src.promps.list import (
+from notelink.promps.list import (
     ask_to_choose_hostname,
     ask_to_choose_action,
     ask_to_choose_hostname_with_action,
 )
-from src.promps.search import ask_for_search_action
-from src.core import NoteMe
-from src.core import helpers
+from notelink.promps.search import ask_for_search_action
+from notelink.core import NoteMe, ensure_config
+from notelink.core import helpers
 
 
 @click.group()
 @click.pass_context
 def cli(ctx):
     ctx.obj = NoteMe()
+    ensure_config(ctx.obj.config)
 
 
 @cli.command()
@@ -67,3 +68,7 @@ def nsearch(note_me: NoteMe, search: str, limit: int, hostname: str) -> None:
 
     link_chosen, action = ask_for_search_action(list_links)
     helpers.helper_for_action(note_me=note_me, link_chosen=link_chosen, action=action)
+
+
+if __name__ == '__main__':
+    cli()
